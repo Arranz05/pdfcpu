@@ -1,0 +1,1 @@
+To execute pkg\api\sign_preparation.go I have created an execute.go file that takes pkg\testdata\Acroforms2.pdf and applies the sign preparation (it does not work yet)
