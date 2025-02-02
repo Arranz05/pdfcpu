@@ -1,1 +1,2 @@
-To execute pkg\api\sign_preparation.go I have created an execute.go file that takes pkg\testdata\Acroforms2.pdf and applies the sign preparation (it does not work yet)
+To execute pkg\api\sign_preparation.go I have created an execute.go file that takes pkg\testdata\Acroforms2.pdf and applies the sign preparation (it does not work yet).
+On the other hand, pkg\api\sig_placeholder.go is working but needs checking. It's executed using execute_1.go
