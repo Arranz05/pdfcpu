@@ -71,7 +71,7 @@ func WriteUpdatedPDF(ctx *model.Context, outputPath string, conf *model.Configur
 
 	// Write the modified PDF to the output file.
 	if err := Write(ctx, outFile, conf); err != nil {
-		return fmt.Errorf("failed to write PDF context: %w", err)
+		return fmt.Errorf("failed to write PDF context: %w", err) // TODO: The content format is a compressed object strema. Consider changing it in the future
 	}
 
 	return nil
