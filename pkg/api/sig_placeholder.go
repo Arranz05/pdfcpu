@@ -35,7 +35,8 @@ func AddObject(ctx *model.Context, object []byte, outputPath string, conf *model
 		Dict: types.Dict{
 			"Length": types.Integer(len(object)),
 		},
-		Content: object,
+		Content:        object,
+		FilterPipeline: nil,
 	}
 	indRef := types.IndirectRef{ObjectNumber: types.Integer(objectID)}
 
@@ -120,6 +121,62 @@ func CreateSignaturePlaceholder(signatureMaxLength int, name, location, reason, 
 
 	return buf.Bytes()
 }
+func UpdateByteRange(pdfPath string, signatureOffset int, signatureLength int) error {
+	// Read the entire PDF file.
+	pdfData, err := os.ReadFile(pdfPath)
+	if err != nil {
+		return fmt.Errorf("failed to read PDF file: %w", err)
+	}
+
+	// Calculate byte range values.
+	brStart := 0
+	br1 := signatureOffset            // Start of the signature
+	br2 := signatureLength            // Length of the signature
+	br3 := len(pdfData) - (br1 + br2) // Remaining bytes after signature
+
+	// Format the new byte range string.
+	byteRangeStr := fmt.Sprintf("/ByteRange [%d %d %d %d]", brStart, br1, br1+br2, br3)
+
+	// Locate and replace the existing /ByteRange placeholder.
+	byteRangePlaceholder := "/ByteRange [0 0 0 0]"
+	updatedPDF := bytes.Replace(pdfData, []byte(byteRangePlaceholder), []byte(byteRangeStr), 1)
+
+	if !bytes.Contains(updatedPDF, []byte(byteRangeStr)) {
+		return fmt.Errorf("failed to update /ByteRange in PDF")
+	}
+
+	// Write the updated PDF back to file.
+	if err := os.WriteFile(pdfPath, updatedPDF, 0644); err != nil {
+		return fmt.Errorf("failed to write updated PDF file: %w", err)
+	}
+
+	return nil
+}
+
+// CreateAcroForm generates the AcroForm dictionary for the PDF catalog.
+//func CreateAcroForm(ctx *model.Context) []byte {
+//var buf bytes.Buffer
+
+//buf.WriteString("<<\n")
+//buf.WriteString("  /Fields [")
+
+// Add existing signatures
+//for i, sig := range existingSignatures {
+//if i > 0 {
+//buf.WriteString(" ")
+//}
+//buf.WriteString(strconv.Itoa(sig.objectId) + " 0 R")
+//}
+
+//buf.WriteString("]\n") // Close Fields array
+
+// Signature flags
+//buf.WriteString("  /SigFlags 3\n")
+
+//buf.WriteString(">>\n") // Close AcroForm dictionary
+
+//return buf.Bytes()
+//}
 
 // pdfString escapes and formats a string for PDF content.
 func pdfString(input string) string {
