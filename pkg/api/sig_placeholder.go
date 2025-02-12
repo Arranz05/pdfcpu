@@ -41,7 +41,8 @@ func AddObject(ctx *model.Context, object []byte, outputPath string, conf *model
 	indRef := types.IndirectRef{ObjectNumber: types.Integer(objectID)}
 
 	ctx.XRefTable.Table[int(indRef.ObjectNumber)] = &model.XRefTableEntry{
-		Object: pdfObject,
+		Object:     pdfObject,
+		Compressed: false,
 	}
 	// Write the updated PDF file.
 	err := WriteUpdatedPDF(ctx, outputPath, conf)
